@@ -3,33 +3,47 @@ package slack
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
+	"net/url"
 
 	"encore.dev/rlog"
+	"github.com/slack-go/slack"
 )
 
-type SlackPayload struct {
-	Payload json.RawMessage `json:"payload"`
-}
-
 //encore:api public raw method=POST path=/slack/interactive
-func InteractiveRouter(w http.ResponseWriter, req *http.Request) {
-	// Parse the request body
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		log.Printf("Error reading body: %v", err)
-		http.Error(w, "can't read body", http.StatusBadRequest)
+func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Create payload instance
-	var payload SlackPayload
-	err = json.Unmarshal(body, &payload)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		rlog.Error("Error unmarshalling payload", "payload", err)
-		http.Error(w, "can't unmarshal payload", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	rlog.Debug("Slack Interactive Webhook", "body_payload", payload.Payload)
+
+	jsonStr, err := url.QueryUnescape(string(body)[8:])
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var message slack.InteractionCallback
+	if err := json.Unmarshal([]byte(jsonStr), &message); err != nil {
+		rlog.Error("[ERROR] Failed to decode json message from slack", "jsonstr", jsonStr)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	switch message.Type {
+	case slack.InteractionTypeWorkflowStepEdit:
+	case slack.InteractionTypeViewSubmission:
+	default:
+		rlog.Error("[WARN] unknown message type: ", "meesage_type", message.Type)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	rlog.Debug("Slack Interactive Webhook", "body_payload", message.Message)
 }
