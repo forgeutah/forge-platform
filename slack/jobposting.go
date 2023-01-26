@@ -1,10 +1,11 @@
 package slack
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"encore.dev/rlog"
 )
 
 //encore:api public raw method=POST path=/slack/interactive
@@ -16,5 +17,5 @@ func InteractiveRouter(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "can't read body", http.StatusBadRequest)
 		return
 	}
-	fmt.Print(body)
+	rlog.Debug("Slack Interactive Webhook", "body", body)
 }
