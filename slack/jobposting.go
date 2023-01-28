@@ -25,6 +25,7 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonStr, err := url.QueryUnescape(string(body)[8:])
+	rlog.Info("Slack Interactive Webhook", "body_payload", jsonStr)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -38,12 +39,12 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch message.Type {
-	case slack.InteractionTypeWorkflowStepEdit:
-	case slack.InteractionTypeViewSubmission:
+	case slack.InteractionTypeShortcut:
+		message
 	default:
 		rlog.Error("[WARN] unknown message type: ", "meesage_type", message.Type)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	rlog.Debug("Slack Interactive Webhook", "body_payload", message.Message)
+	//rlog.Debug("Slack Interactive Webhook", "body_payload", message.Message)
 }
