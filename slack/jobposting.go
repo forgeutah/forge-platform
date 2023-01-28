@@ -4,8 +4,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"encore.dev/rlog"
+	"github.com/tidwall/gjson"
 )
 
 //encore:api public raw method=POST path=/slack/interactive
@@ -23,11 +25,17 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonStr, err := url.QueryUnescape(string(body)[8:])
-
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	s, _ := strconv.Unquote(string(jsonStr))
+
+	value := gjson.Get(s, "callback_id")
+	if value.String() == "job_posting" {
+		rlog.Info("Job Posting")
+	}
+
 	rlog.Info("Slack Interactive Webhook", "body_payload", jsonStr)
 
 }
