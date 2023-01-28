@@ -30,6 +30,7 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s, _ := strconv.Unquote(string(jsonStr))
+	rlog.Info("unescaped", "s", s)
 
 	value := gjson.Get(s, "callback_id")
 	if value.String() == "job_posting" {
