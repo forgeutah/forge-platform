@@ -1,0 +1,71 @@
+{
+    "trigger_id": "{{.TriggerID}}",
+    "view": {
+        "type": "modal",
+        "callback_id": "job_post_form",
+        "title": {
+            "type": "plain_text",
+            "text": "Add Job Post",
+            "emoji": true
+        },
+        "submit": {
+            "type": "plain_text",
+            "text": "Submit",
+            "emoji": true
+        },
+        "close": {
+            "type": "plain_text",
+            "text": "Cancel",
+            "emoji": true
+        },
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Fill out the information to add a job post to Forge Utah"
+                }
+            },
+            {
+                "type": "divider"
+            },
+            {
+                "type": "input",
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "company"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "Company Name",
+                    "emoji": true
+                }
+            },
+            {
+                "type": "input",
+                "element": {
+                    "type": "plain_text_input",
+                    "multiline": true,
+                    "action_id": "description"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "Description",
+                    "emoji": true
+                }
+            },
+            {
+                "type": "input",
+                "element": {
+                    "type": "email_text_input",
+                    "action_id": "contact_emil"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "Contact Email",
+                    "emoji": true
+                }
+            }
+        ]
+    }
+}

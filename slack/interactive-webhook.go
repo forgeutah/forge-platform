@@ -1,0 +1,221 @@
+package slack
+
+import (
+	"bytes"
+	"context"
+	"html/template"
+	"io/ioutil"
+	"log"
+	"net/http"
+
+	"encore.dev/rlog"
+	"github.com/kollalabs/sdk-go/kc"
+	"github.com/tidwall/gjson"
+)
+
+var secrets struct {
+	Kolla string
+}
+
+//encore:api public raw method=POST path=/slack/interactive
+func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	r.ParseForm()
+	payload := r.PostFormValue("payload")
+	rlog.Info("webhook", "payload", payload)
+
+	rlog.Debug("slack", "valid", gjson.Valid(payload))
+
+	//jsonStr, err := url.QueryUnescape(string(body)[8:])
+
+	webhookType := gjson.Get(payload, "type")
+
+	if webhookType.String() == "shortuct" {
+		callbackID := gjson.Get(payload, "callback_id")
+		// switch statement to handle different types of slack shorcuts
+		switch callbackID.String() {
+		case "job_post_form_request":
+			rlog.Debug("Job Posting Shortcut Fired")
+			err := JobPostForm(ctx, gjson.Get(payload, "trigger_id").String())
+			if err != nil {
+				rlog.Error("Error sending Job Post Form", "err", err)
+				return
+			}
+		}
+	} else if webhookType.String() == "view_submission" {
+		// What form was submitted
+		callbackID := gjson.Get(payload, "view.callback_id")
+		// switch statement to handle different types of slack shorcuts
+		switch callbackID.String() {
+		case "job_post_form_submit":
+			rlog.Debug("Job Posting Form Submitted")
+			// Get the values from the form
+			//company := gjson.Get(payload, "view.state.values.company.company.value")
+		}
+	}
+
+	//rlog.Info("Slack Interactive Webhook", "body_payload", jsonStr)
+
+}
+
+// Send the Job Post form modal in slack to the person that ran the shortcut
+func JobPostForm(ctx context.Context, triggerID string) error {
+	// Open template file and parse it
+	t, err := template.New("job_post_form").Parse(tmplJobPostForm)
+	if err != nil {
+		rlog.Error("Error parsing template", "err", err)
+		return err
+	}
+	// Put variables in template
+	data := struct {
+		TriggerID string
+	}{triggerID}
+	// Execute template and write to buffer
+	var tpl bytes.Buffer
+	err = t.Execute(&tpl, data)
+	if err != nil {
+		rlog.Error("Error executing template", "err", err)
+		return err
+	}
+
+	kolla, err := kc.New(secrets.Kolla)
+	if err != nil {
+		rlog.Error("unable to load kolla connect client", "error", err)
+		return err
+	}
+	// Get consumer token
+	creds, err := kolla.Credentials(ctx, "internal-slack", "internal") // Use consumer ID set in consumer token
+	if err != nil {
+		log.Fatalf("unable to load consumer credentials: %s\n", err)
+		return err
+	}
+
+	req, err := http.NewRequest("POST", "https://slack.com/api/views.open", &tpl)
+	if err != nil {
+		rlog.Error("Error creating Job Post Form request", "err", err)
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+creds.Token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		rlog.Error("Error sending Job Post Form", "err", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		rlog.Error("Error sending Job Post Form", "status", resp.StatusCode)
+		return err
+	}
+	// Get response body
+	body, err := ioutil.ReadAll(resp.Body)
+	// decode body
+	stringbody := string(body)
+	rlog.Debug("Job Post Form Sent", "status", resp.StatusCode)
+	rlog.Debug("Job Post Form Sent", "body", stringbody)
+
+	if err != nil {
+		rlog.Error("Error sending Job Post Form", "err", err)
+		return err
+	}
+
+	return nil
+}
+
+// JobPosting Slack Modal/Form
+const tmplJobPostForm = `{
+    "trigger_id": "{{.TriggerID}}",
+    "view": {
+        "type": "modal",
+        "callback_id": "job_post_form_submit",
+        "title": {
+            "type": "plain_text",
+            "text": "Add Job Post",
+            "emoji": true
+        },
+        "submit": {
+            "type": "plain_text",
+            "text": "Submit",
+            "emoji": true
+        },
+        "close": {
+            "type": "plain_text",
+            "text": "Cancel",
+            "emoji": true
+        },
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Fill out the information to add a job post to Forge Utah"
+                }
+            },
+            {
+                "type": "divider"
+            },
+            {
+                "type": "input",
+				"block_id": "company",
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "company"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "Company Name",
+                    "emoji": true
+                }
+            },
+            {
+                "type": "input",
+				"block_id": "description",
+                "element": {
+                    "type": "plain_text_input",
+                    "multiline": true,
+                    "action_id": "description"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "Description",
+                    "emoji": true
+                }
+            },
+			{
+                "type": "input",
+				"block_id": "url",
+                "element": {
+                    "type": "url_text_input",
+                    "action_id": "url"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "URL of Official Job Posting",
+                    "emoji": true
+                }
+            },
+            {
+                "type": "input",
+				"block_id": "email",
+				"optional": true,
+                "element": {
+                    "type": "email_text_input",
+                    "action_id": "contact_emil"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "Contact Email",
+                    "emoji": true
+                }
+            }
+        ]
+    }
+}`

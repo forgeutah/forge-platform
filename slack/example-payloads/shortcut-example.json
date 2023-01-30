@@ -1,0 +1,18 @@
+{
+    "type": "shortcut",
+    "token": "dNNd96aOxtMwSrgJl2KUjoG9",
+    "action_ts": "1674880876.670944",
+    "team": {
+        "id": "TC92KEFJT",
+        "domain": "forgeutah"
+    },
+    "user": {
+        "id": "UC81JHDJ6",
+        "username": "clint",
+        "team_id": "TC92KEFJT"
+    },
+    "is_enterprise_install": false,
+    "enterprise": null,
+    "callback_id": "job_post",
+    "trigger_id": "4736643794112.417087491639.faae44c99b59b5bb916476c50825dcf6"
+}

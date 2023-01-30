@@ -1,0 +1,143 @@
+{
+    "type": "view_submission",
+    "team": {
+        "id": "TC92KEFJT",
+        "domain": "forgeutah"
+    },
+    "user": {
+        "id": "UC81JHDJ6",
+        "username": "clint",
+        "name": "clint",
+        "team_id": "TC92KEFJT"
+    },
+    "api_app_id": "A04LYU6GJ0H",
+    "token": "dNNd96aOxtMwSrgJl2KUjoG9",
+    "trigger_id": "4734334893073.417087491639.c182b6cfdbe03570ffa1015497bd76db",
+    "view": {
+        "id": "V04M7KZ77MY",
+        "team_id": "TC92KEFJT",
+        "type": "modal",
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "LYU",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Fill out the information to add a job post to Forge Utah",
+                    "verbatim": false
+                }
+            },
+            {
+                "type": "divider",
+                "block_id": "Qhi"
+            },
+            {
+                "type": "input",
+                "block_id": "vju",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Company Name",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "company",
+                    "dispatch_action_config": {
+                        "trigger_actions_on": [
+                            "on_enter_pressed"
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "input",
+                "block_id": "a+L",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Description",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "description",
+                    "multiline": true,
+                    "dispatch_action_config": {
+                        "trigger_actions_on": [
+                            "on_enter_pressed"
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "input",
+                "block_id": "MWZ",
+                "label": {
+                    "type": "plain_text",
+                    "text": "Contact Email",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "email_text_input",
+                    "action_id": "contact_emil"
+                }
+            }
+        ],
+        "private_metadata": "",
+        "callback_id": "job_post_form",
+        "state": {
+            "values": {
+                "vju": {
+                    "company": {
+                        "type": "plain_text_input",
+                        "value": "Test"
+                    }
+                },
+                "a+L": {
+                    "description": {
+                        "type": "plain_text_input",
+                        "value": "test"
+                    }
+                },
+                "MWZ": {
+                    "contact_emil": {
+                        "type": "email_text_input",
+                        "value": "test@test.com"
+                    }
+                }
+            }
+        },
+        "hash": "1675117292.C7OIxpoa",
+        "title": {
+            "type": "plain_text",
+            "text": "Add Job Post",
+            "emoji": true
+        },
+        "clear_on_close": false,
+        "notify_on_close": false,
+        "close": {
+            "type": "plain_text",
+            "text": "Cancel",
+            "emoji": true
+        },
+        "submit": {
+            "type": "plain_text",
+            "text": "Submit",
+            "emoji": true
+        },
+        "previous_view_id": null,
+        "root_view_id": "V04M7KZ77MY",
+        "app_id": "A04LYU6GJ0H",
+        "external_id": "",
+        "app_installed_team_id": "TC92KEFJT",
+        "bot_id": "B04LJ7F0P0V"
+    },
+    "response_urls": [],
+    "is_enterprise_install": false,
+    "enterprise": null
+}
