@@ -34,11 +34,11 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 
 	webhookType := gjson.Get(payload, "type")
 
-	if webhookType.String() == "shortuct" {
+	if webhookType.String() == "shortcut" {
 		callbackID := gjson.Get(payload, "callback_id")
 		// switch statement to handle different types of slack shorcuts
 		switch callbackID.String() {
-		case "job_post_form_request":
+		case "job_post":
 			rlog.Debug("Job Posting Shortcut Fired")
 			err := JobPostForm(ctx, gjson.Get(payload, "trigger_id").String())
 			if err != nil {
@@ -51,7 +51,7 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 		callbackID := gjson.Get(payload, "view.callback_id")
 		// switch statement to handle different types of slack shorcuts
 		switch callbackID.String() {
-		case "job_post_form_submit":
+		case "job_post_submit":
 			rlog.Debug("Job Posting Form Submitted")
 			// Get the values from the form
 			//company := gjson.Get(payload, "view.state.values.company.company.value")
@@ -135,7 +135,7 @@ const tmplJobPostForm = `{
     "trigger_id": "{{.TriggerID}}",
     "view": {
         "type": "modal",
-        "callback_id": "job_post_form_submit",
+        "callback_id": "job_post_submit",
         "title": {
             "type": "plain_text",
             "text": "Add Job Post",

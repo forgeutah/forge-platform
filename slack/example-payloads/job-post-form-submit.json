@@ -12,15 +12,15 @@
     },
     "api_app_id": "A04LYU6GJ0H",
     "token": "dNNd96aOxtMwSrgJl2KUjoG9",
-    "trigger_id": "4734334893073.417087491639.c182b6cfdbe03570ffa1015497bd76db",
+    "trigger_id": "4707512987511.417087491639.40a9770075f32198106787567a03be4e",
     "view": {
-        "id": "V04M7KZ77MY",
+        "id": "V04MLLB20L9",
         "team_id": "TC92KEFJT",
         "type": "modal",
         "blocks": [
             {
                 "type": "section",
-                "block_id": "LYU",
+                "block_id": "W05",
                 "text": {
                     "type": "mrkdwn",
                     "text": "Fill out the information to add a job post to Forge Utah",
@@ -29,11 +29,11 @@
             },
             {
                 "type": "divider",
-                "block_id": "Qhi"
+                "block_id": "icpCB"
             },
             {
                 "type": "input",
-                "block_id": "vju",
+                "block_id": "company",
                 "label": {
                     "type": "plain_text",
                     "text": "Company Name",
@@ -53,7 +53,7 @@
             },
             {
                 "type": "input",
-                "block_id": "a+L",
+                "block_id": "description",
                 "label": {
                     "type": "plain_text",
                     "text": "Description",
@@ -74,13 +74,28 @@
             },
             {
                 "type": "input",
-                "block_id": "MWZ",
+                "block_id": "url",
+                "label": {
+                    "type": "plain_text",
+                    "text": "URL of Official Job Posting",
+                    "emoji": true
+                },
+                "optional": false,
+                "dispatch_action": false,
+                "element": {
+                    "type": "url_text_input",
+                    "action_id": "url"
+                }
+            },
+            {
+                "type": "input",
+                "block_id": "email",
                 "label": {
                     "type": "plain_text",
                     "text": "Contact Email",
                     "emoji": true
                 },
-                "optional": false,
+                "optional": true,
                 "dispatch_action": false,
                 "element": {
                     "type": "email_text_input",
@@ -89,30 +104,35 @@
             }
         ],
         "private_metadata": "",
-        "callback_id": "job_post_form",
+        "callback_id": "job_post_submit",
         "state": {
             "values": {
-                "vju": {
+                "company": {
                     "company": {
                         "type": "plain_text_input",
-                        "value": "Test"
+                        "value": "Kolla"
                     }
                 },
-                "a+L": {
+                "description": {
                     "description": {
                         "type": "plain_text_input",
-                        "value": "test"
+                        "value": "Senior developers galore!"
                     }
                 },
-                "MWZ": {
+                "url": {
+                    "url": {
+                        "type": "url_text_input",
+                        "value": "https://getkolla.com"
+                    }
+                },
+                "email": {
                     "contact_emil": {
-                        "type": "email_text_input",
-                        "value": "test@test.com"
+                        "type": "email_text_input"
                     }
                 }
             }
         },
-        "hash": "1675117292.C7OIxpoa",
+        "hash": "1675122914.KYb7ddpt",
         "title": {
             "type": "plain_text",
             "text": "Add Job Post",
@@ -131,7 +151,7 @@
             "emoji": true
         },
         "previous_view_id": null,
-        "root_view_id": "V04M7KZ77MY",
+        "root_view_id": "V04MLLB20L9",
         "app_id": "A04LYU6GJ0H",
         "external_id": "",
         "app_installed_team_id": "TC92KEFJT",
