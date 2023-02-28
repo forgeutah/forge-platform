@@ -14,7 +14,8 @@ import (
 )
 
 var secrets struct {
-	Kolla string
+	ForgeDataAPIToken string
+	KollaAPIKey       string
 }
 
 //encore:api public raw method=POST path=/slack/interactive
@@ -45,6 +46,12 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 				rlog.Error("Error sending Job Post Form", "err", err)
 				return
 			}
+		case "meetup_link":
+			rlog.Debug("Meetup Link Shortcut Fired", "payload", payload)
+			triggerID := gjson.Get(payload, "trigger_id").String()
+			userID := gjson.Get(payload, "user.id").String()
+			go InitiateLinkMeetup(ctx, userID, triggerID)
+			return
 		}
 	} else if webhookType.String() == "view_submission" {
 		// What form was submitted
@@ -53,6 +60,7 @@ func InteractiveRouter(w http.ResponseWriter, r *http.Request) {
 		switch callbackID.String() {
 		case "job_post_submit":
 			rlog.Debug("Job Posting Form Submitted")
+			JobPostSubmit(payload)
 			// Get the values from the form
 			//company := gjson.Get(payload, "view.state.values.company.company.value")
 		}
@@ -82,7 +90,7 @@ func JobPostForm(ctx context.Context, triggerID string) error {
 		return err
 	}
 
-	kolla, err := kc.New(secrets.Kolla)
+	kolla, err := kc.New(secrets.KollaAPIKey)
 	if err != nil {
 		rlog.Error("unable to load kolla connect client", "error", err)
 		return err
@@ -126,6 +134,49 @@ func JobPostForm(ctx context.Context, triggerID string) error {
 		rlog.Error("Error sending Job Post Form", "err", err)
 		return err
 	}
+
+	return nil
+}
+
+func JobPostSubmit(payload string) error {
+	// Get the values from the form
+	company := gjson.Get(payload, "view.state.values.company.company.value")
+	url := gjson.Get(payload, "view.state.values.url.url.value")
+	contactEmail := gjson.Get(payload, "view.state.values.email.contact_email.value")
+	description := gjson.Get(payload, "view.state.values.description.description.value")
+	userID := gjson.Get(payload, "user.id")
+
+	rlog.Debug("Job Post Form Submitted", "company", company.Str)
+	rlog.Debug("Job Post Form Submitted", "url", url.Str)
+	rlog.Debug("Job Post Form Submitted", "contact", contactEmail.Str)
+	rlog.Debug("Job Post Form Submitted", "description", description.Str)
+
+	// Load user from Forge Data API
+	// Create a new http client and make request
+	req, err := http.NewRequest("GET", "https://forge-api.fly.dev/api/people?filters[slack_id][$eq]="+userID.Str, nil)
+	if err != nil {
+		rlog.Error("Error creating person data api request", "err", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+secrets.ForgeDataAPIToken)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	// Check for error code
+	if resp.StatusCode != http.StatusOK {
+		rlog.Error("Error sending person search to forge data api", "status", resp.StatusCode)
+		return err
+	}
+
+	if err != nil {
+		rlog.Error("Error sending person search to forge data api", "err", err)
+		return err
+	}
+	// Get response body and parse to json
+	body, err := ioutil.ReadAll(resp.Body)
+	// decode body
+	rlog.Debug("Person Search Response", "body", string(body))
 
 	return nil
 }

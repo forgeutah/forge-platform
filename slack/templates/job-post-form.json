@@ -58,7 +58,7 @@
                 "type": "input",
                 "element": {
                     "type": "email_text_input",
-                    "action_id": "contact_emil"
+                    "action_id": "contact_email"
                 },
                 "label": {
                     "type": "plain_text",

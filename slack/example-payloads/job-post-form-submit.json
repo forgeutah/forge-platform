@@ -12,15 +12,15 @@
     },
     "api_app_id": "A04LYU6GJ0H",
     "token": "dNNd96aOxtMwSrgJl2KUjoG9",
-    "trigger_id": "4707512987511.417087491639.40a9770075f32198106787567a03be4e",
+    "trigger_id": "4819583710165.417087491639.70fca8424dab6e0deea2ba2ee5c63cf8",
     "view": {
-        "id": "V04MLLB20L9",
+        "id": "V04Q8UYQ0TW",
         "team_id": "TC92KEFJT",
         "type": "modal",
         "blocks": [
             {
                 "type": "section",
-                "block_id": "W05",
+                "block_id": "FJMGm",
                 "text": {
                     "type": "mrkdwn",
                     "text": "Fill out the information to add a job post to Forge Utah",
@@ -29,7 +29,7 @@
             },
             {
                 "type": "divider",
-                "block_id": "icpCB"
+                "block_id": "Rn+"
             },
             {
                 "type": "input",
@@ -110,13 +110,13 @@
                 "company": {
                     "company": {
                         "type": "plain_text_input",
-                        "value": "Kolla"
+                        "value": "Test 1"
                     }
                 },
                 "description": {
                     "description": {
                         "type": "plain_text_input",
-                        "value": "Senior developers galore!"
+                        "value": "Test 1 description"
                     }
                 },
                 "url": {
@@ -127,12 +127,13 @@
                 },
                 "email": {
                     "contact_emil": {
-                        "type": "email_text_input"
+                        "type": "email_text_input",
+                        "value": "clint@getkolla.com"
                     }
                 }
             }
         },
-        "hash": "1675122914.KYb7ddpt",
+        "hash": "1676657913.uuJlGB8V",
         "title": {
             "type": "plain_text",
             "text": "Add Job Post",
@@ -151,7 +152,7 @@
             "emoji": true
         },
         "previous_view_id": null,
-        "root_view_id": "V04MLLB20L9",
+        "root_view_id": "V04Q8UYQ0TW",
         "app_id": "A04LYU6GJ0H",
         "external_id": "",
         "app_installed_team_id": "TC92KEFJT",
