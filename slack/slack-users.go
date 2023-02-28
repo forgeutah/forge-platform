@@ -3,6 +3,7 @@ package slack
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,14 +19,18 @@ func SyncSlackUserToDataApi(ctx context.Context, id string) (*data.Person, error
 	var person *data.Person
 
 	slackUser, err := GetSlackUserByID(ctx, id)
+	if err != nil {
+		return person, fmt.Errorf("couldn't load slack user: %w", err)
+	}
 
 	p, derr := data.LoadUserBySlackID(ctx, id)
 	if derr != nil {
 		e, ok := derr.(*errs.Error)
 		if !ok {
+			rlog.Debug("Error loading user by slack id", "error", derr.Error())
 			return person, derr
 		}
-		if e.Code != errs.NotFound {
+		if e.Code == errs.NotFound {
 			// Create a new user
 			pReq := &data.Person{}
 			pReq.Attributes.SlackID = slackUser.ID
@@ -33,19 +38,20 @@ func SyncSlackUserToDataApi(ctx context.Context, id string) (*data.Person, error
 			pReq.Attributes.Email = slackUser.Profile.Email
 
 			p, err = data.CreatePerson(ctx, pReq)
+			rlog.Debug("Person created", p)
 			if err != nil {
 				return person, err
 			}
-			return p, nil
 		}
 	}
-	cpr := data.Person{}
+	rlog.Debug("Person found or credated", "person", p)
+	cpr := &data.Person{}
 	cpr.Attributes.SlackID = slackUser.ID
 	cpr.Attributes.DisplayName = slackUser.Name
 	cpr.Attributes.Email = slackUser.Profile.Email
 
-	p, err = data.UpdatePerson(ctx, p.ID, &cpr)
-	return p, err
+	newp, err := data.UpdatePerson(ctx, p.ID, cpr)
+	return newp, nil
 }
 
 // GetSlackUserByID returns a slack user by id

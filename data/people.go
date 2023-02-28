@@ -57,7 +57,7 @@ func LoadUserBySlackID(ctx context.Context, slackID string) (*Person, error) {
 		rlog.Debug("No person found", "slackID", slackID)
 		return ret, &errs.Error{
 			Code:    errs.NotFound,
-			Message: fmt.Sprintf("User not found: %s", err),
+			Message: fmt.Sprintf("User not found: %s", slackID),
 		}
 	}
 
